@@ -1,0 +1,113 @@
+version: 2
+orbs:
+  codecov: codecov/codecov@1.0.2
+jobs:
+  lint:
+    docker:
+      - image: python:3.6
+      - image: postgres
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install tox
+
+      - run:
+          name: run tests
+          command: |
+            tox -e lint -vv
+
+  test-python36-unit:
+    docker:
+      - image: python:3.6
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install tox
+
+      - run:
+          name: run tests
+          command: |
+            tox -e py36-unit-tests -vv
+
+  test-python36:
+    docker:
+      - image: python:3.6
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install tox
+
+      - run:
+          name: run tests
+          command: |
+            tox -e py36-* -vv
+          environment:
+            PGDATABASE=cabbage
+            PGHOST=localhost
+            PGUSER=postgres
+
+  test-python36:
+    docker:
+      - image: python:3.6
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install tox
+
+      - run:
+          name: run tests
+          command: |
+            tox -e py36-* -vv
+          environment:
+            PGDATABASE=cabbage
+            PGHOST=localhost
+            PGUSER=postgres
+
+  test-python37:
+    docker:
+      - image: python:3.7
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install tox
+
+      - run:
+          name: run tests
+          command: |
+            tox -e py37-* -vv
+          environment:
+            PGDATABASE=cabbage
+            PGHOST=localhost
+            PGUSER=postgres
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - lint
+      - test-python36:
+          requires:
+            - lint
+      - test-python37:
+          requires:
+            - lint
